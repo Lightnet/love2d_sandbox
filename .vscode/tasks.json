@@ -1,0 +1,41 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  // https://love2d.org/wiki/love.load
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Love2d",
+      "type": "shell",
+      "command": "D:/dev/love-11.5-win64/bin/love.exe ${workspaceRoot} --hello test",
+      "args": [],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Love2d-server",
+      "type": "shell",
+      "command": "D:/dev/love-11.5-win64/bin/love.exe ${workspaceRoot} server",
+      "args": [],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Love2d-client",
+      "type": "shell",
+      "command": "D:/dev/love-11.5-win64/bin/love.exe ${workspaceRoot} client",
+      "args": [],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    }
+  ]
+}
