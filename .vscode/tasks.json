@@ -7,7 +7,7 @@
     {
       "label": "Love2d",
       "type": "shell",
-      "command": "D:/dev/love-11.5-win64/bin/love.exe ${workspaceRoot} --hello test",
+      "command": "love ${workspaceRoot} --hello test",
       "args": [],
       "problemMatcher": [],
       "group": {
@@ -18,7 +18,7 @@
     {
       "label": "Love2d-server",
       "type": "shell",
-      "command": "D:/dev/love-11.5-win64/bin/love.exe ${workspaceRoot} server",
+      "command": "love ${workspaceRoot} server",
       "args": [],
       "problemMatcher": [],
       "group": {
@@ -29,7 +29,7 @@
     {
       "label": "Love2d-client",
       "type": "shell",
-      "command": "D:/dev/love-11.5-win64/bin/love.exe ${workspaceRoot} client",
+      "command": "love ${workspaceRoot} client",
       "args": [],
       "problemMatcher": [],
       "group": {
