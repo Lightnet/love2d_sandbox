@@ -7,60 +7,82 @@
 local network = require 'libraries/network'
 local enet = require "enet"
 
-local enethost = nil
-local hostevent = nil
-local clientpeer = nil
+local host = nil
+local server = nil
 local network_type = "none"
 
 function set_up_server()
   -- establish host for receiving msg
-  enethost = enet.host_create("localhost:6750")
+  host = enet.host_create("localhost:6750")
   network_type = "server"
 end
 
 function set_up_client()
   -- establish a connection to host on same PC
-  enetclient = enet.host_create()
-  clientpeer = enetclient:connect("localhost:6750")
+  host = enet.host_create()
+  server = host:connect("localhost:6750")
   network_type = "client"
 end
 
 function ServerListen()
-  hostevent = enethost:service(100)
-
-  if hostevent then
-    print("Server detected message type: " .. hostevent.type)
-    if hostevent.type == "connect" then
-      print(hostevent.peer, "connected.")
+  local event = host:service(100)
+  if event then
+    print("Server detected message type: " .. event.type)
+    if event.type == "connect" then
+      print(event.peer, "connected.")
     end
-    if hostevent.type == "receive" then
-      print("Received message: ", hostevent.data, hostevent.peer)
-      hostevent.peer:send(hostevent.data)
+    if event.type == "receive" then
+      print("Received message: ", event.data, event.peer)
+      --event.peer:send(event.data)
+    end
+    if event.type == "disconnect" then
+      print(event.peer, "disconnected.")
     end
   end
 end
 
 function ServerSend()
-  enethost:service(100)
-  enethost:send("Hi")
+  print(host)
+  for peerIndex = 1, host:peer_count() do
+    local peer = host:get_peer(peerIndex)
+    if peer then
+      peer:send("Hi")
+    end
+  end
 end
 
 function ClientListen()
-  local event = enetclient:service(100)
+  local event = host:service(100)
   if event then
+    print("Server detected message type: " .. event.type)
     if event.type == "connect" then
       print("Connected to", event.peer)
-      event.peer:send("hello world")
-    elseif event.type == "receive" then
+      --event.peer:send("hello world")
+    end
+    if event.type == "receive" then
       print("Got message: ", event.data, event.peer)
       --done = true
+    end
+    if event.type == "disconnect" then
+      print(event.peer, "disconnected.")
     end
   end
 end
 
 function ClientSend()
-  enetclient:service(100)
-  clientpeer:send("Hi")
+  host:service(100)
+  server:send("Hi")
+end
+
+function NetworkSend()
+
+  if network_type == "server" then
+    ServerSend()
+  end
+
+  if network_type == "client" then
+    ClientSend()
+  end
 end
 
 print("init app...")
@@ -285,18 +307,14 @@ function init_chat_menu()
     "Ping",
     function()
       print("Ping")
-      if network_type == "client" then
-        ClientSend()
-      end
+      NetworkSend()
     end
   ))
   table.insert(chat_buttons, uiButton(
     "Send",
     function()
       print("Send")
-      if network_type == "client" then
-        ClientSend()
-      end
+      NetworkSend()
     end
   ))
   table.insert(chat_buttons, uiButton(
