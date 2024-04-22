@@ -14,36 +14,54 @@ local network_type = "none"
 
 function set_up_server()
   -- establish host for receiving msg
-	enethost = enet.host_create("localhost:6750")
+  enethost = enet.host_create("localhost:6750")
   network_type = "server"
 end
 
 function set_up_client()
   -- establish a connection to host on same PC
-	enetclient = enet.host_create()
+  enetclient = enet.host_create()
   clientpeer = enetclient:connect("localhost:6750")
   network_type = "client"
 end
 
 function ServerListen()
-	hostevent = enethost:service(100)
-	
-	if hostevent then
-		print("Server detected message type: " .. hostevent.type)
-		if hostevent.type == "connect" then 
-			print(hostevent.peer, "connected.")
-		end
-		if hostevent.type == "receive" then
-			print("Received message: ", hostevent.data, hostevent.peer)
-		end
-	end
+  hostevent = enethost:service(100)
+
+  if hostevent then
+    print("Server detected message type: " .. hostevent.type)
+    if hostevent.type == "connect" then
+      print(hostevent.peer, "connected.")
+    end
+    if hostevent.type == "receive" then
+      print("Received message: ", hostevent.data, hostevent.peer)
+      hostevent.peer:send(hostevent.data)
+    end
+  end
+end
+
+function ServerSend()
+  enethost:service(100)
+  enethost:send("Hi")
+end
+
+function ClientListen()
+  local event = enetclient:service(100)
+  if event then
+    if event.type == "connect" then
+      print("Connected to", event.peer)
+      event.peer:send("hello world")
+    elseif event.type == "receive" then
+      print("Got message: ", event.data, event.peer)
+      --done = true
+    end
+  end
 end
 
 function ClientSend()
-	enetclient:service(100)
-	clientpeer:send("Hi")
+  enetclient:service(100)
+  clientpeer:send("Hi")
 end
-
 
 print("init app...")
 local app = {
@@ -56,7 +74,7 @@ local app = {
 
 BUTTON_HEIGHT = 64
 
-local function newButton(text,fn)
+local function newButton(text, fn)
   return {
     text = text,
     fn = fn,
@@ -105,7 +123,7 @@ function draw_main_menu()
   local ww = love.graphics.getWidth()
   local wh = love.graphics.getHeight()
 
-  local button_width = ww * (1/3)
+  local button_width = ww * (1 / 3)
 
   --love.graphics.print('Hello World!', 400, 300)
   --love.graphics.draw(reddice1, 300, 200)
@@ -119,15 +137,15 @@ function draw_main_menu()
     local bx = (ww * 0.5) - (button_width * 0.5)
     local by = (wh * 0.5) - (total_height * 0.5) + cursor_y
 
-    local color = {0.4,0.4,0.5,1.0}
+    local color = { 0.4, 0.4, 0.5, 1.0 }
 
     local mx, my = love.mouse.getPosition()
 
-    local hot = mx > bx and mx < bx + button_width and 
-                my > by and my < by + BUTTON_HEIGHT
+    local hot = mx > bx and mx < bx + button_width and
+        my > by and my < by + BUTTON_HEIGHT
 
     if hot then
-      color = {0.8,0.8,0.9,1.0}
+      color = { 0.8, 0.8, 0.9, 1.0 }
     end
 
     button.now = love.mouse.isDown(1)
@@ -143,7 +161,7 @@ function draw_main_menu()
       button_width,
       BUTTON_HEIGHT
     )
-    love.graphics.setColor(0,0,0,1)
+    love.graphics.setColor(0, 0, 0, 1)
 
     local textW = font:getWidth(button.text)
     local textH = font:getHeight(button.text)
@@ -167,7 +185,7 @@ local font_chat = nil
 local chat_buttons = {}
 local net_buttons = {}
 
-local function uiButton(text,fn)
+local function uiButton(text, fn)
   return {
     text = text,
     fn = fn,
@@ -208,7 +226,7 @@ function draw_network_menu()
   local ww = love.graphics.getWidth()
   local wh = love.graphics.getHeight()
 
-  local button_width = ww * (1/3)
+  local button_width = ww * (1 / 3)
 
   --love.graphics.print('Hello World!', 400, 300)
   --love.graphics.draw(reddice1, 300, 200)
@@ -222,15 +240,15 @@ function draw_network_menu()
     local bx = (ww * 0.5) - (button_width * 0.5)
     local by = (wh * 0.5) - (total_height * 0.5) + cursor_y
 
-    local color = {0.4,0.4,0.5,1.0}
+    local color = { 0.4, 0.4, 0.5, 1.0 }
 
     local mx, my = love.mouse.getPosition()
 
-    local hot = mx > bx and mx < bx + button_width and 
-                my > by and my < by + BUTTON_HEIGHT
+    local hot = mx > bx and mx < bx + button_width and
+        my > by and my < by + BUTTON_HEIGHT
 
     if hot then
-      color = {0.8,0.8,0.9,1.0}
+      color = { 0.8, 0.8, 0.9, 1.0 }
     end
 
     button.now = love.mouse.isDown(1)
@@ -246,7 +264,7 @@ function draw_network_menu()
       button_width,
       BUTTON_HEIGHT
     )
-    love.graphics.setColor(0,0,0,1)
+    love.graphics.setColor(0, 0, 0, 1)
 
     local textW = font:getWidth(button.text)
     local textH = font:getHeight(button.text)
@@ -293,7 +311,7 @@ function draw_chat_menu()
   local ww = love.graphics.getWidth()
   local wh = love.graphics.getHeight()
 
-  local button_width = ww * (1/3)
+  local button_width = ww * (1 / 3)
 
   --love.graphics.print('Hello World!', 400, 300)
   --love.graphics.draw(reddice1, 300, 200)
@@ -307,15 +325,15 @@ function draw_chat_menu()
     local bx = (ww * 0.5) - (button_width * 0.5)
     local by = (wh * 0.5) - (total_height * 0.5) + cursor_y
 
-    local color = {0.4,0.4,0.5,1.0}
+    local color = { 0.4, 0.4, 0.5, 1.0 }
 
     local mx, my = love.mouse.getPosition()
 
-    local hot = mx > bx and mx < bx + button_width and 
-                my > by and my < by + BUTTON_HEIGHT
+    local hot = mx > bx and mx < bx + button_width and
+        my > by and my < by + BUTTON_HEIGHT
 
     if hot then
-      color = {0.8,0.8,0.9,1.0}
+      color = { 0.8, 0.8, 0.9, 1.0 }
     end
 
     button.now = love.mouse.isDown(1)
@@ -331,7 +349,7 @@ function draw_chat_menu()
       button_width,
       BUTTON_HEIGHT
     )
-    love.graphics.setColor(0,0,0,1)
+    love.graphics.setColor(0, 0, 0, 1)
 
     local textW = font:getWidth(button.text)
     local textH = font:getHeight(button.text)
@@ -347,9 +365,6 @@ function draw_chat_menu()
   end
 end
 
-
-
-
 -- @param table options
 function app:initialize(options)
   --init_main_menu()
@@ -362,7 +377,9 @@ function app:update(dt)
   if network_type == "server" then
     ServerListen()
   end
-
+  if network_type == "client" then
+    ClientListen()
+  end
 end
 
 function app:draw()
@@ -375,7 +392,8 @@ function app:draw()
   if menu_state == "chat" then
     draw_chat_menu()
   end
-
+  love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+  love.graphics.print(network_type)
 end
 
 return app
