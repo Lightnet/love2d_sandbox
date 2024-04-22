@@ -32,9 +32,9 @@ end
 function love.draw()
   love.graphics.draw(text, pos.x, pos.y)
   ---
-  --app:draw()
+  app:draw()
 end
 
-function love.mousepressed(x, y, mouse_button, is_touch)
+--function love.mousepressed(x, y, mouse_button, is_touch)
   --layouter.processMouse(x, y, mouse_button, is_touch)
-end
+--end

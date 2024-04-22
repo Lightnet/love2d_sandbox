@@ -1,7 +1,7 @@
 -- https://www.youtube.com/watch?v=wttKHL90Ank
 -- https://www.youtube.com/watch?v=vMSjVuJ6wDs
 -- https://github.com/semanticdata/love2d-mmbn-combat-boilerplate
--- 
+-- https://www.youtube.com/watch?v=d-geCesItCc
 -- https://love2d.org/wiki/lua-enet
 
 local network = require 'libraries/network'
@@ -29,9 +29,7 @@ end
 local buttons = {}
 local font = nil
 
-
--- @param table options
-app.initialize = function(options)
+function init_main_menu()
   font = love.graphics.newFont(32)
   --reddice1 = love.graphics.newImage("assets/kenney_boardgame-pack/PNG/Dice/dieRed1.png")
 
@@ -63,11 +61,7 @@ app.initialize = function(options)
   ))
 end
 
-app.update = function()
-  
-end
-
-app.draw = function()
+function draw_main_menu()
   local ww = love.graphics.getWidth()
   local wh = love.graphics.getHeight()
 
@@ -123,6 +117,23 @@ app.draw = function()
 
     cursor_y = cursor_y + (BUTTON_HEIGHT + margin)
   end
+end
+
+
+
+
+
+-- @param table options
+function app:initialize(options)
+  init_main_menu()
+end
+
+function app:update(dt)
+  
+end
+
+function app:draw()
+  draw_main_menu()
 end
 
 return app

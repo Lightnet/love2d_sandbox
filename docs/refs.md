@@ -12,6 +12,8 @@
 
 
 # refs:
+- https://www.youtube.com/watch?v=ON7fpPIVtg8&list=PLqPLyUreLV8DrLcLvQQ64Uz_h_JGLgGg2&index=4
+
 
 - https://love2d.org/forums/viewtopic.php?t=94801
 - https://github.com/love2d-community/awesome-love2d#oo
