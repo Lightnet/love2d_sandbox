@@ -9,11 +9,11 @@ Work in progress.
 Create a rpg card game and network test build?
 
 # Notes paths:
- Love2D has some path fixed to unix format.
+ Love2D has some path fixed to format.
 
  On windows OS it fixed to project folder and %AppData%  > /Roaming/love/<projectname if set in config>
-
- Reason to believe is the match the format for OS pathing application path. You can say default before the new OS pathing. Still using the old format logic. The other reason is the androind and IOS path is fixed to their own app folder not allow out their app folder without permission access.
+ 
+ The reason is the Androind and IOS path is fixed to their own app folder not allow out their app folder without permission access.
 
  * https://love2d.org/wiki/love.filesystem.getRealDirectory
  * https://love2d.org/forums/viewtopic.php?t=91415
