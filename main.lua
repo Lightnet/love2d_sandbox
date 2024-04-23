@@ -45,6 +45,10 @@ function love.draw()
   app:draw()
 end
 
+function love.quit()
+  app:cleanup()
+end
+
 --function love.mousepressed(x, y, mouse_button, is_touch)
   --layouter.processMouse(x, y, mouse_button, is_touch)
 --end

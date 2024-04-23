@@ -11,20 +11,16 @@ local host = nil
 local server = nil
 local network_type = "none"
 
-function set_up_server()
+local enet_server = {}
+local enet_client = {}
+
+function enet_server:setup()
   -- establish host for receiving msg
   host = enet.host_create("localhost:6750")
   network_type = "server"
 end
 
-function set_up_client()
-  -- establish a connection to host on same PC
-  host = enet.host_create()
-  server = host:connect("localhost:6750")
-  network_type = "client"
-end
-
-function ServerListen()
+function enet_server:update()
   local event = host:service(100)
   if event then
     print("Server detected message type: " .. event.type)
@@ -41,17 +37,35 @@ function ServerListen()
   end
 end
 
-function ServerSend()
+function enet_server:send(msg)
   print(host)
   for peerIndex = 1, host:peer_count() do
     local peer = host:get_peer(peerIndex)
     if peer then
-      peer:send("Hi")
+      peer:send(msg)
     end
   end
 end
 
-function ClientListen()
+--send disconnect message to clients?
+function enet_server:cleanup()
+  for peerIndex = 1, host:peer_count() do
+    local peer = host:get_peer(peerIndex)
+    if peer then
+      peer:disconnect_now()
+    end
+  end
+  host:flush()
+end
+
+function enet_client:setup()
+  -- establish a connection to host on same PC
+  host = enet.host_create()
+  server = host:connect("localhost:6750")
+  network_type = "client"
+end
+
+function enet_client:update()
   local event = host:service(100)
   if event then
     print("Server detected message type: " .. event.type)
@@ -69,19 +83,24 @@ function ClientListen()
   end
 end
 
-function ClientSend()
-  host:service(100)
-  server:send("Hi")
+function enet_client:send(msg)
+  if server then
+    host:service(100)
+    server:send(msg)
+  end
 end
 
-function NetworkSend()
+function enet_client:cleanup()
+  server:disconnect()
+  host:flush()
+end
 
+function NetworkSend(msg)
   if network_type == "server" then
-    ServerSend()
+    enet_server:send(msg)
   end
-
   if network_type == "client" then
-    ClientSend()
+    enet_client:send(msg)
   end
 end
 
@@ -223,7 +242,7 @@ function init_network_menu()
     function()
       print("Host")
       menu_state = "chat"
-      set_up_server()
+      enet_server:setup()
     end
   ))
 
@@ -232,7 +251,7 @@ function init_network_menu()
     function()
       print("Join")
       menu_state = "chat"
-      set_up_client()
+      enet_client:setup()
     end
   ))
 
@@ -307,14 +326,14 @@ function init_chat_menu()
     "Ping",
     function()
       print("Ping")
-      NetworkSend()
+      NetworkSend("pingme")
     end
   ))
   table.insert(chat_buttons, uiButton(
     "Send",
     function()
       print("Send")
-      NetworkSend()
+      NetworkSend("send")
     end
   ))
   table.insert(chat_buttons, uiButton(
@@ -393,10 +412,10 @@ end
 
 function app:update(dt)
   if network_type == "server" then
-    ServerListen()
+    enet_server:update()
   end
   if network_type == "client" then
-    ClientListen()
+    enet_client:update()
   end
 end
 
@@ -412,6 +431,16 @@ function app:draw()
   end
   love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
   love.graphics.print(network_type)
+end
+
+function app:cleanup()
+  print("clean up")
+  if network_type == "server" then
+    enet_server:cleanup()
+  end
+  if network_type == "client" then
+    enet_client:cleanup()
+  end
 end
 
 return app
