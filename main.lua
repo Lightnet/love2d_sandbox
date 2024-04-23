@@ -36,7 +36,7 @@ end
 -- this update game or app logic
 function love.update(dt)
   ---
-  app:update()
+  app:update(dt)
 end
 -- this is for render draw to display window render image
 function love.draw()

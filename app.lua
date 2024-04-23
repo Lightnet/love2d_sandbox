@@ -6,17 +6,28 @@
 
 local network = require 'libraries/network'
 local enet = require "enet"
-local Game = require 'states/Game'
+local World = require 'World'
+local Component = require 'Component'
+local System = require 'System'
+local coms = require 'common_components'
+
+print("init app...")
+local app = {
+  _NAME = "app",
+  _DESCRIPTION = 'Library for LÖVE 2D Game Engine',
+  _VERSION = "0.0.1",
+  _LICENSE = "MIT",
+  _LOVE = 11.5,
+}
 
 --///////////////////////////////////////////////
 --///////////////////////////////////////////////
-function setPaused()
-  game:changeGameState("paused")
-end
-function setPaused()
-  game:changeGameState("running")
-end
-
+-- function setPaused()
+--   game:changeGameState("paused")
+-- end
+-- function setPaused()
+--   game:changeGameState("running")
+-- end
 
 local host = nil
 local server = nil
@@ -115,14 +126,7 @@ function NetworkSend(msg)
   end
 end
 
-print("init app...")
-local app = {
-  _NAME = "app",
-  _DESCRIPTION = 'Library for LÖVE 2D Game Engine',
-  _VERSION = "0.0.1",
-  _LICENSE = "MIT",
-  _LOVE = 11.5,
-}
+
 
 BUTTON_HEIGHT = 64
 
@@ -413,10 +417,67 @@ function draw_chat_menu()
   end
 end
 
+function new_renderer_system()
+  local renderer = System.new {"body", "rect"}
+
+  function renderer:load(entity)
+    print "found one!"
+  end
+
+  function renderer:draw(entity)
+    local body = entity:get "body"
+    love.graphics.rectangle('fill', body.x,body.y,32,32)
+  end
+
+  return renderer
+end
+
+function new_functional_system()
+  local system = System.new {"functional"}
+
+  function system:load(entity)
+    print "found one!"
+  end
+
+  function system:update(dt, entity)
+    local fn = entity:get("functional").fn
+    fn(entity, dt)
+  end
+
+  return system
+end
+
 -- @param table options
 function app:initialize(options)
 
-  game = Game()
+  World:register(new_renderer_system())
+  World:register(new_functional_system())
+
+  -- local entity0 = World:create()
+  -- entity0:add(new_body(100,100))
+  -- entity0:add(new_rectangle_component())
+
+  -- local entity1 = World:create()
+  -- entity1:madd(new_body(100,100))
+  --   :madd(new_rectangle_component())
+  World:create()
+  :madd(coms.new_body(100,100))
+  :madd(coms.new_rectangle_component())
+
+  --local test = World:assemble(player_type)
+
+  local test2 = World:assemble {
+    {coms.new_body, 300, 100},
+    {coms.new_rectangle_component}
+  }
+
+  test2:add(coms.functional(function(self, dt)
+    --print("hello world")
+    local body = self:get "body"
+    body.x = body.x + dt * 10
+  end))
+
+
   --init_main_menu()
   font = love.graphics.newFont(24)
   init_network_menu()
@@ -424,8 +485,11 @@ function app:initialize(options)
 end
 
 function app:update(dt)
-  if game.state.running then
-  end
+
+  World:update(dt)
+
+  -- if game.state.running then
+  -- end
 
   if network_type == "server" then
     enet_server:update()
@@ -436,6 +500,7 @@ function app:update(dt)
 end
 
 function app:draw()
+  World:draw()
   --draw_main_menu()
 
   if menu_state == "network" then
