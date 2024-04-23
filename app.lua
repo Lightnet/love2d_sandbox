@@ -6,6 +6,17 @@
 
 local network = require 'libraries/network'
 local enet = require "enet"
+local Game = require 'states/Game'
+
+--///////////////////////////////////////////////
+--///////////////////////////////////////////////
+function setPaused()
+  game:changeGameState("paused")
+end
+function setPaused()
+  game:changeGameState("running")
+end
+
 
 local host = nil
 local server = nil
@@ -404,6 +415,8 @@ end
 
 -- @param table options
 function app:initialize(options)
+
+  game = Game()
   --init_main_menu()
   font = love.graphics.newFont(24)
   init_network_menu()
@@ -411,6 +424,9 @@ function app:initialize(options)
 end
 
 function app:update(dt)
+  if game.state.running then
+  end
+
   if network_type == "server" then
     enet_server:update()
   end
